@@ -1,21 +1,15 @@
 import {Router} from "express"
-import { registerUser, loginUser } from "../controllers/user.controller.js"
+import { eventDetail } from "../controllers/event.controller.js"
 import express from "express"
-import { verifyJWT } from "../middleware/auth.middleware.js"
+
 
 const app = express()
 const router = Router()
 app.use(express.json())
 
-
-router.route("/register").post(
-    registerUser
+router.route("/getevent").get(
+    eventDetail
 )
-
-router.route("/login").post(
-    loginUser
-)
-
 
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log the error

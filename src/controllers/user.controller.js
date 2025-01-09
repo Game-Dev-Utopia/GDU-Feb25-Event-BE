@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../model/users.model.js";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -72,6 +73,34 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 
+const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    
+    if (!email || !password) {
+        res.status(400);
+        throw new Error("All fields are required");
+    }
+
+    
+    const userExist = await User.findOne({ email });
+
+    if (!userExist) {
+        res.status(401);
+        throw new Error("User with this email does not exist");
+    }
+
+   
+    const isMatch = await bcrypt.compare(password, userExist.password);
+
+    if (isMatch) {
+        res.status(200).json({ message: "Login successful!" });
+    } else {
+        res.status(401);
+        throw new Error("Password does not match");
+    }
+});
 
 
-export {registerUser}
+
+export {registerUser, loginUser}
