@@ -25,10 +25,10 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 const registerUser = asyncHandler(async (req, res) => {
 
-    const {username, email, contact,  fullname, password, gender} = req.body
+    const {username, email, contact,  fullname, password, collegeName, year, dept, rollNo } = req.body
 
     if(
-        [fullname, email, username, password, contact, gender].some((field) => 
+        [fullname, email, username, password, contact, collegeName, year, dept, rollNo].some((field) => 
             field?.trim() === "")
     ){
         res.status(401);
@@ -51,7 +51,10 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         fullname,
         contact,
-        gender
+        collegeName, 
+        year,
+        dept,
+        rollNo
 
     })
 

@@ -32,6 +32,10 @@ import eventRouter from "./routes/event.routes.js"
 
 app.use("/api/v1/events", eventRouter)
 
+import registrationRouter from "./routes/registration.routes.js"
+
+
+app.use("/api/v1/registration", registrationRouter)
 
 
 export {app};

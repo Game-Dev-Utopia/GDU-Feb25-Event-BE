@@ -32,8 +32,20 @@ const userSchema = new Schema({
         type : Number,
         required : true
     },
-    gender : {
+    collegeName : {
         type : String,
+        required : true
+    },
+    year : {
+        type : Number,
+        required : true
+    },
+    dept : {
+         type : String,
+         required : true
+    },
+    rollNo : {
+        type : Number,
         required : true
     },
     refreshToken : {
