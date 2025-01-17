@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { Event } from "../model/events.model.js";
 
 const eventDetail = asyncHandler(async (req, res) => {
-    const { eventId } = req.query; // Extract eventId from req.params
+    const { eventId } = req.query; 
 
     
     if (!mongoose.Types.ObjectId.isValid(eventId)) {

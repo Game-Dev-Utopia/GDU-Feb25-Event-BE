@@ -8,6 +8,8 @@ const eventRegistration = asyncHandler(async (req, res) => {
     try {
         const eventId = req.query.eventId;
 
+        const teamname = req.body.teamname;
+
         // Early return if eventId is missing
         if (!eventId) {
             return res.status(400).json({ message: "eventId is required" });
@@ -22,32 +24,33 @@ const eventRegistration = asyncHandler(async (req, res) => {
             return res.status(400).json({ message: "No team emails provided" });
         }
 
-        const memberIds = [];
+        // const memberIds = [];
         
         // Loop through emails and find corresponding users
-        for (let email of teamEmail) {
-            const user = await User.findOne({ email });
+        // for (let email of teamEmail) {
+        //     const user = await User.findOne({ email });
             
-            if (user) {
-                memberIds.push(user._id);
-            } else {
-                console.log(`User not found for email: ${email}`);
-            }
-        }
+        //     if (user) {
+        //         memberIds.push(user._id);
+        //     } else {
+        //         console.log(`User not found for email: ${email}`);
+        //     }
+        // }
 
         // Proceed if there are valid users to register
-        if (memberIds.length > 0) {
-            // Update event with team members
-            await Event.findByIdAndUpdate(
-                eventId,
-                { $push: { members: { $each: memberIds } } },
-                { new: true }
-            );
-        }
+        // if (memberIds.length > 0) {
+        //     // Update event with team members
+        //     await Event.findByIdAndUpdate(
+        //         eventId,
+        //         { $push: { members: { $each: memberIds } } },
+        //         { new: true }
+        //     );
+        // }
 
         // Create registration entry
         const registration = await Registration.create({
-            user: memberIds,
+            teamname : teamname,
+            user: teamEmail,
             event: eventId
         });
 

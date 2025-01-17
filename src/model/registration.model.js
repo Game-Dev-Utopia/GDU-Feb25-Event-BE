@@ -2,9 +2,13 @@ import mongoose, {Schema} from "mongoose";
 
 
 const registrationSchema = new Schema ({
+    teamname : {
+         type : String,
+         required : true
+    },
     user : [
         {
-            type : Schema.Types.ObjectId,
+            type : String,
             ref : "User"
         }
     ],
