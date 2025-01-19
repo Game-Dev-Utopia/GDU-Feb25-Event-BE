@@ -54,6 +54,18 @@ const eventRegistration = asyncHandler(async (req, res) => {
             event: eventId
         });
 
+        for (let email of teamEmail) {
+            const user = await User.findOne({ email });
+            
+            if (user) {
+                console.log(eventId)
+                user.eventsregistered.push(eventId);
+                await user.save(); 
+            } else {
+                console.log(`User not found for email: ${email}`);
+            }
+        }
+
         if (registration) {
             return res.status(200).json({
                 message: "Team registration successful",

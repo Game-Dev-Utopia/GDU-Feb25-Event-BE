@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../model/users.model.js";
+import { Event } from "../model/events.model.js";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -196,7 +197,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
     // Extract the username from the request params
     const { username } = req.query;
 
-    console.log(req.query)
     if (!username?.trim()) {
         res.status(400);
         throw new Error("No valid username");
@@ -238,6 +238,99 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 
 
+const getUserRegisteredEventList = asyncHandler(async (req, res) => {
+    const { username } = req.query;
+
+    if (!username?.trim()) {
+        res.status(400);
+        throw new Error("No valid username provided");
+    }
+
+    const profile = await User.aggregate([
+        {
+            $match: { username: username } 
+        },
+        {
+            $project: { eventsregistered: 1, _id: 0 } 
+        },
+    ]);
+
+    if (!profile?.length) {
+        res.status(404);
+        throw new Error("User profile does not exist");
+    }
+
+   
+    return res.status(200).json({
+        message: "List of event IDs the user has registered into:",
+        events: profile[0].eventsregistered, 
+    });
+});
 
 
-export {registerUser, loginUser, getUserProfile}
+
+const notification = asyncHandler(async (req, res) => {
+    const { username } = req.query;
+
+    if (!username?.trim()) {
+        res.status(400);
+        throw new Error("No valid username provided");
+    }
+
+   
+    const profile = await User.aggregate([
+        {
+            $match: { username: username }, 
+        },
+        {
+            $project: { eventsregistered: 1, _id: 0 },
+        },
+    ]);
+
+    if (!profile?.length) {
+        res.status(404);
+        throw new Error("User profile does not exist");
+    }
+
+    const eventsregistered = profile[0].eventsregistered; 
+
+    if (!eventsregistered?.length) {
+        return res.status(200).json({ message: "No events registered for the user." });
+    }
+
+    const eventdetail = []
+    for (let eventId of eventsregistered) {
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            console.warn(`Event with ID ${eventId} does not exist.`);
+            continue; 
+        }
+
+        const currentDate = new Date();
+        const eventDate = new Date(event.date); 
+        console.log(eventDate)
+
+        // Calculate the remaining days
+        const remainingDays = Math.ceil(
+            (eventDate - currentDate) / (1000 * 60 * 60 * 24)
+        );
+
+        console.log(`Event ID: ${eventId}, Remaining days: ${remainingDays}`);
+        eventdetail.push({
+            "eventid" : eventId,
+            "remaining days" : remainingDays
+        })
+    }
+
+    // Send a success response
+    return res.status(200).json({
+        message: "Notifications processed successfully.",
+        eventdetail
+    });
+});
+
+
+
+
+export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification}
