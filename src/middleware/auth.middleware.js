@@ -8,8 +8,11 @@ dotenv.config(); // Ensure environment variables are loaded
 export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
         // Log the token from the Authorization header or cookies
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
-        
+        // const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        let token = req.cookies?.accessToken || req.header("Authorization");
+        if (token?.startsWith("Bearer ")) {
+            token = token.replace("Bearer ", "");
+        }
         console.log("Token from header or cookies: ", token); // Debugging token
         
         if (!token) {
