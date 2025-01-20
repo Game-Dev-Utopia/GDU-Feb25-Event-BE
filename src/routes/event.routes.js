@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { eventDetail } from "../controllers/event.controller.js"
+import { eventDetail , getallevents} from "../controllers/event.controller.js"
 import express from "express"
 
 
@@ -9,6 +9,9 @@ app.use(express.json())
 
 router.route("/getevent").get(
     eventDetail
+)
+router.route("/getallevents").get(
+    getallevents
 )
 
 app.use((err, req, res, next) => {

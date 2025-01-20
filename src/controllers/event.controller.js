@@ -22,4 +22,17 @@ const eventDetail = asyncHandler(async (req, res) => {
     res.status(200).json(event);
 });
 
-export { eventDetail };
+
+const getallevents = asyncHandler(async (req, res) => {
+    const events = await Event.find();
+
+    
+    if (!events) {
+        return res.status(404).json({ message: "Events not found" });
+    }
+
+   
+    res.status(200).json(events);
+});
+
+export { eventDetail, getallevents };
