@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import { verifyJWT } from "./middleware/auth.middleware.js"
 import {rateLimit} from "express-rate-limit"
+import {slowDown} from "express-slow-down"
 
 
 const limiter = rateLimit({
@@ -10,9 +11,16 @@ const limiter = rateLimit({
     max: 5,
   });
 
+const speedLimiter = slowDown({
+    windowMs: 15 * 60 * 1000,
+    delayAfter: 1,
+    delayMs: () => 2000,
+    });  
+
 
 const app = express()
 app.use(limiter)  
+app.use(speedLimiter)
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     method : ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
