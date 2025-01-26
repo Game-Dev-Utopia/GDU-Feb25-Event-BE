@@ -5,32 +5,38 @@ import bcrypt from "bcryptjs"
 
 
 const userSchema = new Schema({
-    username : {
-        type : String,
-        required : true,
-        unique : [true , "This username is already taken"],
-        index : true
+    username: {
+        type: String,
+        required: true,
+        unique: [true, "This username is already taken"],
+        index: true,
+        minlength: [3, "Username must be at least 3 characters long"],
     },
-    email : {
-        type : String,
-        required : true,
-        unique : [true , "This emailId already exist"],
-        lowercase : true,
-        trim : true
+    email: {
+        type: String,
+        required: true,
+        unique: [true, "This emailId already exists"],
+        lowercase: true,
+        trim: true,
+        match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
-    fullname : {
-        type : String,
-        required : true,
-        trim : true,
-        index : true
-     },
-     password: {
-        type : String,
-        required: [true, "Password is required"]
+    fullname: {
+        type: String,
+        required: true,
+        trim: true,
+        index: true,
+        minlength: [3, "Full name must be at least 3 characters long"],
     },
-    contact : {
-        type : Number,
-        required : true
+    password: {
+        type: String,
+        required: [true, "Password is required"],
+        minlength: [8, "Password must be at least 8 characters long"],
+    },
+    contact: {
+        type: String,
+        required: true,
+        unique: [true, "This contact number is already registered"],
+        match: [/^\d{10}$/, "Contact number must be a valid 10-digit number"]
     },
     collegeName : {
         type : String,
@@ -54,6 +60,10 @@ const userSchema = new Schema({
             ref : "Event"
         }
     ],
+    isAdmin: {
+        type : Boolean,
+        default: false 
+    },
     refreshToken : {
         type: String
     }

@@ -1,9 +1,9 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../model/users.model.js";
 import { Event } from "../model/events.model.js";
+import { Registration } from "../model/registration.model.js";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -18,14 +18,12 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false }); // Save the refreshToken to the database
-
         return { accessToken, refreshToken };
 
     } catch (error) {
         throw new Error(error.message || "Error in generating tokens");
     }
 };
-
 
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -76,8 +74,6 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 });
 
-
-
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -121,7 +117,6 @@ const loginUser = asyncHandler(async (req, res) => {
         }
     });
 });
-
 
 
 const logout = asyncHandler(async(req, res) => {
@@ -237,7 +232,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 
-
 const getUserRegisteredEventList = asyncHandler(async (req, res) => {
     const { username } = req.query;
 
@@ -332,5 +326,59 @@ const notification = asyncHandler(async (req, res) => {
 
 
 
+const Admin = asyncHandler(async(req, res)=> {
+    const {entry, password} = req.body;
 
-export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification}
+    if(!entry){
+        res.status(400);
+        throw new Error("username or email require");
+    }
+
+    const profile = await User.aggregate([
+        {
+            $match: {
+                $or : [
+                    {username : entry},
+                    {email: entry}
+                ]
+            }, 
+        },
+    ]);
+    
+    if (!profile?.length) {
+        res.status(404);
+        throw new Error("User profile does not exist");
+    }
+
+    const isadmin = profile[0].isAdmin;
+
+    if(!isadmin){
+        res.status(404);
+        throw new Error("User profile as Admin does not exist");
+    }
+
+    const result = await Registration.find();
+    
+    const registrationdetail = [];
+    for(let r of result){
+        const event = await Event.findById(r.event);
+        
+        if (event != null) {
+           registrationdetail.push({
+             "eventname" : event.name,
+             "user": r.user
+
+           })
+        }
+        
+    }
+
+
+    res.status(200).json(registrationdetail);
+
+})
+
+
+
+
+export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin}

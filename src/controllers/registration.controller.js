@@ -10,12 +10,11 @@ const eventRegistration = asyncHandler(async (req, res) => {
 
         const teamname = req.body.teamname;
 
-        // Early return if eventId is missing
+       
         if (!eventId) {
             return res.status(400).json({ message: "eventId is required" });
         }
 
-        // Parse and validate teamEmail array
         const teamEmail = Array.isArray(req.body.teamemail)
             ? req.body.teamemail
             : JSON.parse(req.body.teamemail);
