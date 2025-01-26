@@ -2,10 +2,17 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import { verifyJWT } from "./middleware/auth.middleware.js"
+import {rateLimit} from "express-rate-limit"
+
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+  });
 
 
 const app = express()
-
+app.use(limiter)  
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     method : ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
