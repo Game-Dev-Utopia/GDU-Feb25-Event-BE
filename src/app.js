@@ -7,12 +7,12 @@ import {slowDown} from "express-slow-down"
 
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
+    windowMs:  60 * 1000,
+    max: 20,
   });
 
 const speedLimiter = slowDown({
-    windowMs: 15 * 60 * 1000,
+    windowMs:  60 * 1000,
     delayAfter: 1,
     delayMs: () => 2000,
     });  
