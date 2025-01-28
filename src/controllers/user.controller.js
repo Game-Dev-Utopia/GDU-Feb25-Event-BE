@@ -104,8 +104,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
     
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(userExist._id);
-    console.log(accessToken)
-    res.status(200).json({
+    const optionals = {
+        httpOnly :true,
+        secure:true
+      }
+    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
         message: "Login successful",
         accessToken,
         refreshToken,
