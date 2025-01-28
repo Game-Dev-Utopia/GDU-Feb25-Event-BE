@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 
-
 const eventSchema = new Schema({
     name: {
         type: String,
@@ -10,10 +9,18 @@ const eventSchema = new Schema({
     description: {
         type: String,
     },
-    date: {
-        type: Date,
-        required: true
-    },
+    date: [
+        [
+            {
+                type: Date,
+            }
+        ]
+    ], // Array of arrays of dates
+    time: [
+        {
+            type: String,
+        }
+    ], // Array of strings for time
     typeOfevent: {
         type: String,
         required: true
@@ -33,10 +40,9 @@ const eventSchema = new Schema({
             type: String,
         }
     ],
-    imageUrl:{
+    imageUrl: {
         type: String,
     }
-}, { timestamps: true })
+}, { timestamps: true });
 
-
-export const Event = mongoose.model("Event", eventSchema)
+export const Event = mongoose.model("Event", eventSchema);
