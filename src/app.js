@@ -50,8 +50,10 @@ app.use("/api/v1/events", eventRouter)
 
 import registrationRouter from "./routes/registration.routes.js"
 
-
 app.use("/api/v1/registration",  verifyJWT, registrationRouter)
+
+import contactRouter from "./routes/contact.routes.js"
+app.use("/api/v1/contact", contactRouter)
 
 
 export {app};
