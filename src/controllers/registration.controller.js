@@ -96,7 +96,6 @@ const registerForEvent = asyncHandler(async (req, res) => {
         // Return success response with user data
         return res.status(200).json({
             message: "User is authenticated and logged in successfully!",
-            user: req.user // Optionally return user data for debugging
         });
     } catch (error) {
         console.error("Error in registerForEvent:", error);
