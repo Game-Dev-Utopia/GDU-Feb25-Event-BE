@@ -96,7 +96,7 @@ userSchema.methods.generateAccessToken = function () {
 
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '1h'
+        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '5m'
     };
 
     return jwt.sign(payload, secret, options);
@@ -109,7 +109,7 @@ userSchema.methods.generateRefreshToken = function () {
 
     const secret = process.env.REFRESH_TOKEN_SECRET;
     const options = {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRE || '7d'
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRE || '1d'
     };
 
     return jwt.sign(payload, secret, options);
