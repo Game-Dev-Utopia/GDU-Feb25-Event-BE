@@ -110,8 +110,6 @@ const loginUser = asyncHandler(async (req, res) => {
       }
     res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
         message: "Login successful",
-        accessToken,
-        refreshToken,
         user: {
             id: userExist._id,
             username: userExist.username,
