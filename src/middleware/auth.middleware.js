@@ -9,7 +9,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
         // Log the token from the Authorization header or cookies
         // const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
-        let token = req.cookies?.accessToken || req.header("Authorization");
+        let token = req.cookies?.accessToken;
         if (token?.startsWith("Bearer ")) {
             token = token.replace("Bearer ", "");
         }
