@@ -88,35 +88,29 @@ const eventRegistration = asyncHandler(async (req, res) => {
 // Register for Event Handler (User Authentication)
 const registerForEvent = asyncHandler(async (req, res) => {
     try {
-        console.log("reqqqqqqqqqqqq", req)
-        console.log("req.user", req.user); // Debugging user information
+       
+        console.log("req.user", req.user); 
 
-        // Check if the user is authenticated
+       
         if (!req.user) {
             return res.status(401).json({
                 message: "User not authenticated. Please log in to continue."
             });
         }
-        console.log(req.body)
-
-        const { eventId } = req.body; // Extract eventId from request body
+        
+        const { eventId } = req.body; 
 
         if (!eventId) {
             return res.status(400).json({
                 message: "Event ID is required."
             });
         }
-        console.log("User Email:", req.user.email); // Ensure correct email is used
+        console.log("User Email:", req.user.email);
         console.log("Event ID:", eventId);
 
-        // Convert eventId to ObjectId if necessary
-        // const mongoose = require("mongoose");
-        // const eventObjectId = mongoose.Types.ObjectId(eventId);
-
-        // Check if the user is already registered for the event
         const isRegistered = await Registration.findOne({
-            user: req.user.email, // ✅ Check by user email instead of `_id`
-            event: eventId // ✅ Ensure eventId is stored as ObjectId
+            user: req.user.email, 
+            event: eventId 
         });
 
         console.log("isRegistered:", isRegistered);
@@ -127,7 +121,6 @@ const registerForEvent = asyncHandler(async (req, res) => {
             });
         }
 
-        // Return success response (User is authenticated but not registered yet)
         return res.status(200).json({
             message: "User is authenticated and not registered for this event.",
         });
