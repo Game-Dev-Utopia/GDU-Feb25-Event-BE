@@ -104,12 +104,17 @@ const loginUser = asyncHandler(async (req, res) => {
 
     
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(userExist._id);
+    const isProduction = process.env.NODE_ENV === 'production';
     const optionals = {
-        httpOnly :true,
-        secure:true
-      }
+        httpOnly: true,
+        secure: isProduction, // Use secure cookies only in production
+        sameSite: isProduction ? 'strict' : 'lax', // Improve CSRF protection
+    };
+
     res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
         message: "Login successful",
+        accessToken,
+        refreshToken,
         user: {
             id: userExist._id,
             username: userExist.username,
