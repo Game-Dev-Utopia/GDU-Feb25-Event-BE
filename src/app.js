@@ -21,23 +21,33 @@ const speedLimiter = slowDown({
 const app = express()
 app.use(limiter)  
 app.use(speedLimiter)
+const allowedOrigins = ["http://localhost:3000", "https://glitched.gamedevutopia.in"];
+
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://glitched.gamedevutopia.in"], // Explicit allowed origins
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
-        allowedHeaders: ["Content-Type", "Authorization"], 
-        credentials: true  
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, origin);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true, // ✅ Important for sending cookies
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
 
+app.use(cookieParser());
+
+
 app.options("*", (req, res) => {
-    const allowedOrigins = ["http://localhost:3000", "https://glitched.gamedevutopia.in"];
     const origin = req.headers.origin;
     
     if (allowedOrigins.includes(origin)) {
-        res.setHeader("Access-Control-Allow-Origin", origin); 
-        res.setHeader("Access-Control-Allow-Credentials", "true"); 
+        res.setHeader("Access-Control-Allow-Origin", origin);
+        res.setHeader("Access-Control-Allow-Credentials", "true");
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
@@ -45,22 +55,6 @@ app.options("*", (req, res) => {
     res.sendStatus(204);
 });
 
-
-const allowedOrigins = ["http://localhost:3000", "https://glitched.gamedevutopia.in"];
-
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader("Access-Control-Allow-Origin", origin);
-        res.setHeader("Access-Control-Allow-Credentials", "true");
-    }
-
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    next();
-});
 
 
 
@@ -73,7 +67,7 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 
 
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
 
 import userRouter from "./routes/user.routes.js"
