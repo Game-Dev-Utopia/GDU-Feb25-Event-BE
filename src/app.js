@@ -22,8 +22,8 @@ const app = express()
 app.use(limiter)  
 app.use(speedLimiter)
 app.use(cors({
-    origin: "http://localhost:3000", 
-    // origin : "https://glitched.gamedevutopia.in",
+    // origin: "http://localhost:3000", 
+    origin : "https://glitched.gamedevutopia.in",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
     allowedHeaders: ["Content-Type", "Authorization"], 
     credentials: true // ✅ Required for cookies
@@ -31,8 +31,8 @@ app.use(cors({
 
 // ✅ Manually handle preflight (`OPTIONS`) requests
 app.options("*", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    // res.header("Access-Control-Allow-Origin", "https://glitched.gamedevutopia.in");
+    // res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "https://glitched.gamedevutopia.in");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
