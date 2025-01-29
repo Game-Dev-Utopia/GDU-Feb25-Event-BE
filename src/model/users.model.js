@@ -96,7 +96,7 @@ userSchema.methods.generateAccessToken = function () {
 
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '1m'
+        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '5m'
     };
 
     return jwt.sign(payload, secret, options);
