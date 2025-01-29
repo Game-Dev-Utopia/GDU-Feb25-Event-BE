@@ -21,7 +21,7 @@ const speedLimiter = slowDown({
 const app = express()
 app.use(limiter)  
 app.use(speedLimiter)
-const allowedOrigins = ["http://localhost:3000", "https://glitched.gamedevutopia.in"];
+const allowedOrigins = ["https://glitched.gamedevutopia.in"];
 
 app.use(
     cors({
