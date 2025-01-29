@@ -29,23 +29,23 @@ const generateAccessAndRefereshTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, contact, fullname, password, collegeName, year, dept, rollNo } = req.body;
 
-   
+
     if ([fullname, email, username, password, contact, collegeName, year, dept, rollNo].some((field) => !field?.trim())) {
         res.status(400);
         throw new Error("All fields are required");
     }
 
-    
+
     const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     });
 
     if (existedUser) {
-        res.status(409); 
+        res.status(409);
         throw new Error("User with email or username already exists");
     }
 
-    
+
     const user = await User.create({
         username,
         email,
@@ -77,39 +77,39 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    
+
     if (!email || !password) {
         res.status(400);
         throw new Error("All fields are required");
     }
-   
-   
 
-  
+
+
+
     const userExist = await User.findOne({ email });
     if (!userExist) {
         res.status(404);
         throw new Error("User with this email does not exist");
     }
-    
-    
-    
+
+
+
     const isMatch = await bcrypt.compare(password, userExist.password);
     if (!isMatch) {
         res.status(401);
         throw new Error("Invalid email or password");
     }
 
-    
 
-    
+
+
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(userExist._id);
     const optionals = {
         httpOnly: true,
         secure: false, // ❌ Change to `true` only in production with HTTPS
         sameSite: "Lax"
-      }
-    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).cookie("user",userExist._id).json({
+    }
+    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).cookie("user", userExist._id).json({
         message: "Login successful",
         user: {
             id: userExist._id,
@@ -121,7 +121,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 
-const logout = asyncHandler(async(req, res) => {
+const logout = asyncHandler(async (req, res) => {
     console.log(req)
     console.log(req.user)
     await User.findByIdAndUpdate(
@@ -142,19 +142,19 @@ const logout = asyncHandler(async(req, res) => {
     }
 
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .clearCookie("user", options)
-    .json("User Logged out successfully")
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .clearCookie("user", options)
+        .json("User Logged out successfully")
 })
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingrefreshtoken = req.cookie.refreshToken
-    || req.body.refreshToken
+        || req.body.refreshToken
 
-    if(!refreshAccessToken){
+    if (!refreshAccessToken) {
         res.status(400);
         throw new Error("Unauthorized Request");
     }
@@ -166,30 +166,31 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const user = await User.findById(decode?._id)
 
-    if(!user){
+    if (!user) {
         res.status(400);
         throw new Error("Invalid Refresh Token");
     }
 
-    if(incomingrefreshtoken !== user?.refreshToken){
+    if (incomingrefreshtoken !== user?.refreshToken) {
         res.status(400);
         throw new Error("Refresh Token expired");
     }
 
     const optionals = {
-        httpOnly :true,
-        secure:true
-      }
+        httpOnly: true, // ✅ Prevents JavaScript access (more secure)
+        secure: true, // ✅ Required for HTTPS (ensure your domain is using HTTPS)
+        sameSite: "None",
+    }
 
-      const {accesstoken, refreshtoken} = await generateAccessAndRefereshTokens(user._id);
+    const { accesstoken, refreshtoken } = await generateAccessAndRefereshTokens(user._id);
 
-      return res
-      .status(200)
-      .cookie("accesstoken" , accesstoken, optionals)
-      .cookie("refreshtoken", refreshtoken, optionals )
-      .json(
-        "Token send successfully..!!"
-      )
+    return res
+        .status(200)
+        .cookie("accesstoken", accesstoken, optionals)
+        .cookie("refreshtoken", refreshtoken, optionals)
+        .json(
+            "Token send successfully..!!"
+        )
 })
 
 
@@ -201,7 +202,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("No valid username");
     }
-    
+
 
     const profile = await User.aggregate([
         {
@@ -247,10 +248,10 @@ const getUserRegisteredEventList = asyncHandler(async (req, res) => {
 
     const profile = await User.aggregate([
         {
-            $match: { username: username } 
+            $match: { username: username }
         },
         {
-            $project: { eventsregistered: 1, _id: 0 } 
+            $project: { eventsregistered: 1, _id: 0 }
         },
     ]);
 
@@ -259,10 +260,10 @@ const getUserRegisteredEventList = asyncHandler(async (req, res) => {
         throw new Error("User profile does not exist");
     }
 
-   
+
     return res.status(200).json({
         message: "List of event IDs the user has registered into:",
-        events: profile[0].eventsregistered, 
+        events: profile[0].eventsregistered,
     });
 });
 
@@ -276,10 +277,10 @@ const notification = asyncHandler(async (req, res) => {
         throw new Error("No valid username provided");
     }
 
-   
+
     const profile = await User.aggregate([
         {
-            $match: { username: username }, 
+            $match: { username: username },
         },
         {
             $project: { eventsregistered: 1, _id: 0 },
@@ -291,7 +292,7 @@ const notification = asyncHandler(async (req, res) => {
         throw new Error("User profile does not exist");
     }
 
-    const eventsregistered = profile[0].eventsregistered; 
+    const eventsregistered = profile[0].eventsregistered;
 
     if (!eventsregistered?.length) {
         return res.status(200).json({ message: "No events registered for the user." });
@@ -303,11 +304,11 @@ const notification = asyncHandler(async (req, res) => {
 
         if (!event) {
             console.warn(`Event with ID ${eventId} does not exist.`);
-            continue; 
+            continue;
         }
 
         const currentDate = new Date();
-        const eventDate = new Date(event.date); 
+        const eventDate = new Date(event.date[0]);
         console.log(eventDate)
 
         // Calculate the remaining days
@@ -315,10 +316,10 @@ const notification = asyncHandler(async (req, res) => {
             (eventDate - currentDate) / (1000 * 60 * 60 * 24)
         );
 
-        console.log(`Event ID: ${eventId}, Remaining days: ${remainingDays}`);
+        // console.log(`Event ID: ${eventId}, Remaining days: ${remainingDays}`);
         eventdetail.push({
-            "eventid" : eventId,
-            "remaining days" : remainingDays
+            "eventid": eventId,
+            "remaining days": remainingDays
         })
     }
 
@@ -331,10 +332,10 @@ const notification = asyncHandler(async (req, res) => {
 
 
 
-const Admin = asyncHandler(async(req, res)=> {
-    const {entry, password} = req.body;
+const Admin = asyncHandler(async (req, res) => {
+    const { entry, password } = req.body;
 
-    if(!entry){
+    if (!entry) {
         res.status(400);
         throw new Error("username or email require");
     }
@@ -342,14 +343,14 @@ const Admin = asyncHandler(async(req, res)=> {
     const profile = await User.aggregate([
         {
             $match: {
-                $or : [
-                    {username : entry},
-                    {email: entry}
+                $or: [
+                    { username: entry },
+                    { email: entry }
                 ]
-            }, 
+            },
         },
     ]);
-    
+
     if (!profile?.length) {
         res.status(404);
         throw new Error("User profile does not exist");
@@ -357,25 +358,25 @@ const Admin = asyncHandler(async(req, res)=> {
 
     const isadmin = profile[0].isAdmin;
 
-    if(!isadmin){
+    if (!isadmin) {
         res.status(404);
         throw new Error("User profile as Admin does not exist");
     }
 
     const result = await Registration.find();
-    
-    const registrationdetail = [];
-    for(let r of result){
-        const event = await Event.findById(r.event);
-        
-        if (event != null) {
-           registrationdetail.push({
-             "eventname" : event.name,
-             "user": r.user
 
-           })
+    const registrationdetail = [];
+    for (let r of result) {
+        const event = await Event.findById(r.event);
+
+        if (event != null) {
+            registrationdetail.push({
+                "eventname": event.name,
+                "user": r.user
+
+            })
         }
-        
+
     }
 
 
@@ -386,4 +387,4 @@ const Admin = asyncHandler(async(req, res)=> {
 
 
 
-export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin, logout}
+export { registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin, logout }
