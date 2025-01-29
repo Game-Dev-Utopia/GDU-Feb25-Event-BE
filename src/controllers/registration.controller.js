@@ -6,9 +6,11 @@ import { Event } from "../model/events.model.js";
 // Event Registration Handler
 const eventRegistration = asyncHandler(async (req, res) => {
     try {
+        // console.log(req.body)
         const eventId = req.query.eventId;
 
-        const teamname = req.body.teamname;
+        const teamname = req.body.teamName;
+        // console.log("event reg", eventId, teamname)
 
        
         if (!eventId) {
@@ -52,6 +54,8 @@ const eventRegistration = asyncHandler(async (req, res) => {
             user: teamEmail,
             event: eventId
         });
+
+        // console.log("registration", registration)
 
         for (let email of teamEmail) {
             const user = await User.findOne({ email });

@@ -105,10 +105,11 @@ const loginUser = asyncHandler(async (req, res) => {
     
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(userExist._id);
     const optionals = {
-        httpOnly :true,
-        secure:true
+        httpOnly: true,
+        secure: false, // ❌ Change to `true` only in production with HTTPS
+        sameSite: "Lax"
       }
-    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
+    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).cookie("user",userExist._id).json({
         message: "Login successful",
         user: {
             id: userExist._id,
@@ -121,8 +122,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 const logout = asyncHandler(async(req, res) => {
+    console.log(req)
+    console.log(req.user)
     await User.findByIdAndUpdate(
-        req.user._id,
+        req.user,
         {
             $unset: {
                 refreshToken: 1 // this removes the field from document
@@ -142,6 +145,7 @@ const logout = asyncHandler(async(req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
+    .clearCookie("user", options)
     .json("User Logged out successfully")
 })
 
@@ -382,4 +386,4 @@ const Admin = asyncHandler(async(req, res)=> {
 
 
 
-export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin}
+export {registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin, logout}

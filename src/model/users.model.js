@@ -36,7 +36,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: [true, "This contact number is already registered"],
-        match: [/^\d{10}$/, "Contact number must be a valid 10-digit number"]
+        // match: [/^\d{10}$/, "Contact number must be a valid 10-digit number"]
     },
     collegeName : {
         type : String,
@@ -96,7 +96,7 @@ userSchema.methods.generateAccessToken = function () {
 
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '5m'
+        expiresIn : process.env.ACCESS_TOKEN_EXPIRE || '1m'
     };
 
     return jwt.sign(payload, secret, options);

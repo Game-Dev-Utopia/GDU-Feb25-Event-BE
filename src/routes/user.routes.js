@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { registerUser, loginUser , getUserProfile, getUserRegisteredEventList, notification, Admin} from "../controllers/user.controller.js"
+import { registerUser, loginUser , getUserProfile, getUserRegisteredEventList, notification,logout, Admin} from "../controllers/user.controller.js"
 import express from "express"
 import { verifyJWT } from "../middleware/auth.middleware.js"
 import { get } from "mongoose"
@@ -15,6 +15,10 @@ router.route("/register").post(
 
 router.route("/login").post(
     loginUser
+)
+
+router.route("/logout").post(
+    logout
 )
 
 router.route("/getuser").get(

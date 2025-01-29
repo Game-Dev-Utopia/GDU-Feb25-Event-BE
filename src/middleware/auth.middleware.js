@@ -18,7 +18,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ message: "No token provided. Unauthorized access." });
         }
-        
+
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         console.log("Decoded JWT: ", decoded); // Debugging decoded token
         

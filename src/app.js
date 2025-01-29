@@ -22,11 +22,23 @@ const app = express()
 app.use(limiter)  
 app.use(speedLimiter)
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    method : ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders : ['*'],
-    credentials: true
-}))
+    origin: "http://localhost:3000", // ✅ Must match exactly with frontend
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // ✅ Ensure all required methods
+    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Explicitly allow headers
+    credentials: true // ✅ Required for cookies
+}));
+
+// ✅ Manually handle preflight (`OPTIONS`) requests
+app.options("*", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.sendStatus(204); // ✅ Preflight request successful
+});
+
+// Handle Preflight Requests
+
 
 
 app.use(express.json({limit: "16kb"}));
