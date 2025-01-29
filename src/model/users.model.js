@@ -36,7 +36,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: [true, "This contact number is already registered"],
-        match: [/^\d{10}$/, "Contact number must be a valid 10-digit number"]
+        // match: [/^\d{10}$/, "Contact number must be a valid 10-digit number"]
     },
     collegeName : {
         type : String,
