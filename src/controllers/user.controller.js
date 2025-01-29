@@ -107,7 +107,8 @@ const loginUser = asyncHandler(async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const optionals = {
         httpOnly :true,
-        secure:true
+        secure:true,
+        sameSite: "None"
       }
     res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
         message: "Login successful",
