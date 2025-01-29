@@ -277,14 +277,10 @@ const notification = asyncHandler(async (req, res) => {
         throw new Error("No valid username provided");
     }
 
-
+    // Find the user's registered events
     const profile = await User.aggregate([
-        {
-            $match: { username: username },
-        },
-        {
-            $project: { eventsregistered: 1, _id: 0 },
-        },
+        { $match: { username: username } },
+        { $project: { eventsregistered: 1, _id: 0 } },
     ]);
 
     if (!profile?.length) {
@@ -298,7 +294,8 @@ const notification = asyncHandler(async (req, res) => {
         return res.status(200).json({ message: "No events registered for the user." });
     }
 
-    const eventdetail = []
+    const eventdetail = [];
+
     for (let eventId of eventsregistered) {
         const event = await Event.findById(eventId);
 
@@ -307,28 +304,47 @@ const notification = asyncHandler(async (req, res) => {
             continue;
         }
 
+        if (!event.date || event.date.length === 0) {
+            console.warn(`Event with ID ${eventId} has no valid date.`);
+            continue;
+        }
+
+        // Get the first date from the event's date array
         const currentDate = new Date();
         const eventDate = new Date(event.date[0]);
-        console.log(eventDate)
 
-        // Calculate the remaining days
-        const remainingDays = Math.ceil(
-            (eventDate - currentDate) / (1000 * 60 * 60 * 24)
-        );
+        // Calculate remaining time in days
+        let remainingTime = "Date not available";
+        if (!isNaN(eventDate.getTime())) {
+            const diffMs = eventDate - currentDate;
 
-        // console.log(`Event ID: ${eventId}, Remaining days: ${remainingDays}`);
+            if (diffMs > 0) {
+                const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                remainingTime = `${days}d ${hours}h ${minutes}m remaining`;
+            } else {
+                remainingTime = "Event has started or passed";
+            }
+        }
+
+        // Add event details to response array
         eventdetail.push({
-            "eventid": eventId,
-            "remaining days": remainingDays
-        })
+            eventid: eventId,
+            eventname: event.name, // ✅ Event name
+            eventdesc: event.description, // ✅ Event description
+            remainingTime, // ✅ Time remaining till event
+        });
     }
 
-    // Send a success response
+    // Send response
     return res.status(200).json({
         message: "Notifications processed successfully.",
         eventdetail
     });
 });
+
 
 
 
