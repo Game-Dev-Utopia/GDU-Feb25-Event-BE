@@ -168,7 +168,7 @@ const loginUser = asyncHandler(async (req, res) => {
         secure:true,
         sameSite: "None"
       }
-    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).json({
+    res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).cookie("email", email, optionals).json({
         message: "Login successful",
         accessToken,
         refreshToken,
