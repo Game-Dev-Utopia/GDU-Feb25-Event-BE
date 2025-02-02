@@ -338,73 +338,73 @@ const notification = asyncHandler(async (req, res) => {
         throw new Error("No valid username provided");
     }
 
-    // Find the user's registered events
+    // Fetch user events
     const profile = await User.aggregate([
         { $match: { username: username } },
         { $project: { eventsregistered: 1, _id: 0 } },
     ]);
 
     if (!profile?.length) {
-        res.status(404);
-        throw new Error("User profile does not exist");
+        return res.status(404).json({ error: "User profile does not exist" });
     }
 
     const eventsregistered = profile[0].eventsregistered;
-
+    
     if (!eventsregistered?.length) {
         return res.status(200).json({ message: "No events registered for the user." });
     }
-
+    console.log("Registered events", eventsregistered)
     const eventdetail = [];
 
     for (let eventId of eventsregistered) {
         const event = await Event.findById(eventId);
 
         if (!event) {
-            console.warn(`Event with ID ${eventId} does not exist.`);
+            console.warn(`⚠️ Event with ID ${eventId} does not exist.`);
             continue;
         }
 
-        if (!event.date || event.date.length === 0) {
-            console.warn(`Event with ID ${eventId} has no valid date.`);
-            continue;
-        }
+        let remainingTime = "Updated soon"; // Default value if no valid date
 
-        // Get the first date from the event's date array
-        const currentDate = new Date();
-        const eventDate = new Date(event.date[0]);
+        if (event.date && Array.isArray(event.date) && event.date.length > 0) {
+            const eventDate = new Date(event.date[0]);
 
-        // Calculate remaining time in days
-        let remainingTime = "Date not available";
-        if (!isNaN(eventDate.getTime())) {
-            const diffMs = eventDate - currentDate;
+            if (!isNaN(eventDate.getTime())) {
+                // ✅ Calculate remaining time
+                const currentDate = new Date();
+                
+                if (eventDate > currentDate) {
+                    const diffMs = eventDate - currentDate;
+                    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-            if (diffMs > 0) {
-                const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                remainingTime = `${days}d ${hours}h ${minutes}m remaining`;
-            } else {
-                remainingTime = "Event has started or passed";
+                    remainingTime = `${days}d ${hours}h ${minutes}m remaining`;
+                } else {
+                    remainingTime = "Event has started or passed";
+                }
             }
         }
 
-        // Add event details to response array
+        // ✅ Add event details to response array
         eventdetail.push({
             eventid: eventId,
-            eventname: event.name, // ✅ Event name
-            eventdesc: event.description, // ✅ Event description
-            remainingTime, // ✅ Time remaining till event
+            eventname: event.name, 
+            eventdesc: event.description,
+            eventDate: event.date?.[0] || "TBD", // Show "TBD" if no date is available
+            remainingTime,
         });
     }
 
-    // Send response
+    console.log("📢 Event Notifications:", eventdetail);
+
+    // ✅ Send response
     return res.status(200).json({
         message: "Notifications processed successfully.",
         eventdetail
     });
 });
+
 
 
 
