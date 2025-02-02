@@ -4,6 +4,7 @@ import { Event } from "../model/events.model.js";
 import { Registration } from "../model/registration.model.js";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "../utils/Nodemailer.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -26,6 +27,60 @@ const generateAccessAndRefereshTokens = async (userId) => {
 };
 
 
+const otpStore = new Map();
+
+const sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Please enter an email address" });
+    }
+   
+ 
+   
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    
+    otpStore.set(email, otp);
+
+   
+    await sendVerificationEmail(email, otp);
+
+    res.status(200).json({ message: "OTP sent successfully", email });
+  } catch (error) {
+    
+    return res.status(500).json({
+      message: error.message || "Error in sending Mail",
+    });
+  }
+};
+
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+ 
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+    
+    
+    if (otpStore.get(email) === otp) {
+      otpStore.delete(email); 
+      return res.status(200).json({ message: "OTP verified successfully" });
+    } else {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+  } catch (error) {
+    console.error("Error sending OTP:", error); // Log error for debugging
+    return res.status(500).json({
+      message: error.message || "Error in sending Mail",
+    });
+  }
+};
+
+
+
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, contact, fullname, password, collegeName, year, dept, rollNo } = req.body;
 
@@ -44,7 +99,8 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(409);
         throw new Error("User with email or username already exists");
     }
-
+    
+  
 
     const user = await User.create({
         username,
@@ -55,13 +111,15 @@ const registerUser = asyncHandler(async (req, res) => {
         collegeName,
         year,
         dept,
-        rollNo
+        rollNo,
+       
     });
 
     if (!user) {
         res.status(500);
         throw new Error("Something went wrong while registering the user");
     }
+
 
     res.status(201).json({
         message: "User created successfully",
@@ -406,4 +464,4 @@ const Admin = asyncHandler(async (req, res) => {
 
 
 
-export { registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin, logout }
+export { registerUser, loginUser, getUserProfile, getUserRegisteredEventList, notification, Admin, logout, sendOtp, verifyOtp }

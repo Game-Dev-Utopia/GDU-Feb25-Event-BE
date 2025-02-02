@@ -64,6 +64,19 @@ const userSchema = new Schema({
         type : Boolean,
         default: false 
     },
+    // isVerified: { 
+    //     type: Boolean,
+    //      default: false
+    // },
+    // otp: { 
+    //     type: String, 
+    //     required: false 
+    // },
+    // otpExpires: { 
+    //     type: Date,
+    //     required: false 
+    // },
+    
     refreshToken : {
         type: String
     }

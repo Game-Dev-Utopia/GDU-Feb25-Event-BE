@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { registerUser, loginUser , getUserProfile, getUserRegisteredEventList, notification,logout, Admin} from "../controllers/user.controller.js"
+import { registerUser, loginUser , getUserProfile, getUserRegisteredEventList, notification,logout, Admin, sendOtp, verifyOtp} from "../controllers/user.controller.js"
 import express from "express"
 import { verifyJWT } from "../middleware/auth.middleware.js"
 import { get } from "mongoose"
@@ -38,6 +38,15 @@ router.route("/notification").get(
 router.route("/admin").post(
     Admin
 )
+
+router.route("/send-otp").post(
+    sendOtp
+)
+
+router.route("/verify-otp").post(
+    verifyOtp
+)
+
 
 
 app.use((err, req, res, next) => {
