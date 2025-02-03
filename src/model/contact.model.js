@@ -16,7 +16,7 @@ const contactSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      match: [/^\d{10,15}$/, "Please enter a valid phone number"], // Validates phone numbers with 10-15 digits
+      // match: [/^\d{10,15}$/, "Please enter a valid phone number"], // Validates phone numbers with 10-15 digits
     },
     message: {
       type: String,
