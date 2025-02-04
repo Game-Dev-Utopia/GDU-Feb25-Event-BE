@@ -8,7 +8,7 @@ const router = Router()
 app.use(express.json())
 
 
-router.route("/contact").post(
+router.route("/").post(
     submitContact
 )
 

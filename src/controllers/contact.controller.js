@@ -3,29 +3,33 @@ import mongoose from "mongoose";
 import { Contact } from "../model/contact.model.js";
 
 const submitContact = asyncHandler(async (req, res) => {
-    const { name, email, phone, message } = req.body;
+  const { name, email, phone, message } = req.body;
+  console.log(name,email,phone,message);
 
-    // Validate required fields
-    if (!name || !email || !phone || !message) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
+  // Validate required fields
+  if (!name || !email || !phone || !message) {
+    return res.status(400).json({ 
+      error: "All fields are required.", 
+      missingFields: { name: !name, email: !email, phone: !phone, message: !message }
+    });
+  }
 
-    // Create a new contact
-    const newContact = new Contact({
+
+    // Save the contact to the database
+    const newContact = await Contact.create({
       name,
       email,
       phone,
       message,
     });
 
-    // Save the contact to the database
-    await newContact.save();
-
-    // Respond with success
+    console.log(newContact);
     return res.status(201).json({
       message: "Contact created successfully.",
       contact: newContact,
     });
-})
+ 
+});
 
-export {submitContact}
+
+export { submitContact }

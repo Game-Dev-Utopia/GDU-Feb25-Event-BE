@@ -30,11 +30,30 @@ const generateAccessAndRefereshTokens = async (userId) => {
 const otpStore = new Map();
 
 const sendOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Please enter an email address" });
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Please enter an email address" });
+        }
+
+
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+
+        otpStore.set(email, otp);
+
+
+        await sendVerificationEmail(email, otp);
+
+        res.status(200).json({ message: "OTP sent successfully", email });
+    } catch (error) {
+
+        return res.status(500).json({
+            message: error.message || "Error in sending Mail",
+        });
     }
+<<<<<<< HEAD
    
    console.log(email)
    
@@ -54,30 +73,32 @@ const sendOtp = async (req, res) => {
       message: error.message || "Error in sending Mail",
     });
   }
+=======
+>>>>>>> 53c412126176beabf84b85a7b846664959df2e5e
 };
 
 
 const verifyOtp = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
- 
-    if (!email || !otp) {
-      return res.status(400).json({ message: "Email and OTP are required" });
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({ message: "Email and OTP are required" });
+        }
+
+
+        if (otpStore.get(email) === otp) {
+            otpStore.delete(email);
+            return res.status(200).json({ message: "OTP verified successfully" });
+        } else {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+    } catch (error) {
+        console.error("Error sending OTP:", error); // Log error for debugging
+        return res.status(500).json({
+            message: error.message || "Error in sending Mail",
+        });
     }
-    
-    
-    if (otpStore.get(email) === otp) {
-      otpStore.delete(email); 
-      return res.status(200).json({ message: "OTP verified successfully" });
-    } else {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
-  } catch (error) {
-    console.error("Error sending OTP:", error); // Log error for debugging
-    return res.status(500).json({
-      message: error.message || "Error in sending Mail",
-    });
-  }
 };
 
 
@@ -85,7 +106,7 @@ const verifyOtp = async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, contact, fullname, password, collegeName, year, dept, rollNo } = req.body;
 
-
+    console.log(username, email, contact, fullname, password, collegeName, year, dept, rollNo)
     if ([fullname, email, username, password, contact, collegeName, year, dept, rollNo].some((field) => !field?.trim())) {
         res.status(400);
         throw new Error("All fields are required");
@@ -100,8 +121,8 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(409);
         throw new Error("User with email or username already exists");
     }
-    
-  
+
+
 
     const user = await User.create({
         username,
@@ -113,7 +134,7 @@ const registerUser = asyncHandler(async (req, res) => {
         year,
         dept,
         rollNo,
-       
+
     });
 
     if (!user) {
@@ -166,10 +187,10 @@ const loginUser = asyncHandler(async (req, res) => {
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(userExist._id);
     const isProduction = process.env.NODE_ENV === 'production';
     const optionals = {
-        httpOnly :true,
-        secure:true,
+        httpOnly: true,
+        secure: true,
         sameSite: "None"
-      }
+    }
     res.status(200).cookie("accessToken", accessToken, optionals).cookie("refreshToken", refreshToken, optionals).cookie("email", email, optionals).json({
         message: "Login successful",
         accessToken,
@@ -351,7 +372,7 @@ const notification = asyncHandler(async (req, res) => {
     }
 
     const eventsregistered = profile[0].eventsregistered;
-    
+
     if (!eventsregistered?.length) {
         return res.status(200).json({ message: "No events registered for the user." });
     }
@@ -374,7 +395,7 @@ const notification = asyncHandler(async (req, res) => {
             if (!isNaN(eventDate.getTime())) {
                 // ✅ Calculate remaining time
                 const currentDate = new Date();
-                
+
                 if (eventDate > currentDate) {
                     const diffMs = eventDate - currentDate;
                     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -391,7 +412,7 @@ const notification = asyncHandler(async (req, res) => {
         // ✅ Add event details to response array
         eventdetail.push({
             eventid: eventId,
-            eventname: event.name, 
+            eventname: event.name,
             eventdesc: event.description,
             eventDate: event.date?.[0] || "TBD", // Show "TBD" if no date is available
             remainingTime,
