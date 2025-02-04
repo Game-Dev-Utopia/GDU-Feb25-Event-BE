@@ -6,98 +6,66 @@ import { Event } from "../model/events.model.js";
 // Event Registration Handler
 const eventRegistration = asyncHandler(async (req, res) => {
     try {
-        // console.log(req.body)
         const eventId = req.query.eventId;
-
         const teamname = req.body.teamName;
-        // console.log("event reg", eventId, teamname)
 
-
+        // Ensure eventId is provided
         if (!eventId) {
             return res.status(400).json({ message: "eventId is required" });
         }
 
-
-        const teamEmail = Array.isArray(req.body.teamemail)
-            ? req.body.teamemail
-            : JSON.parse(req.body.teamemail);
-
-        const cookiemail = await req.cookies?.email;
-        console.log(cookiemail);
-        console.log(teamEmail[0]);
-
-        if (teamEmail[0] != cookiemail) {
-            return res.status(400).json({
-                message: "Failed to register the team. Team Email not found.",
-            });
-
+        // Parse team email to array if it's not already an array
+        let teamEmail = req.body.teamemail;
+        if (!Array.isArray(teamEmail)) {
+            try {
+                teamEmail = JSON.parse(teamEmail);
+            } catch (err) {
+                return res.status(400).json({ message: "Invalid team email format" });
+            }
         }
 
+        // Ensure the cookie email exists and matches the first team member email
+        const cookiemail = req.cookies?.email;
+        if (!cookiemail || teamEmail[0] !== cookiemail) {
+            return res.status(400).json({
+                message: "Failed to register the team. Team Email not found or does not match cookie email.",
+            });
+        }
+
+        // Ensure at least one team email is provided
         if (teamEmail.length === 0) {
             return res.status(400).json({ message: "No team emails provided" });
         }
-
-        // const memberIds = [];
-
-        // Loop through emails and find corresponding users
-        // for (let email of teamEmail) {
-        //     const user = await User.findOne({ email });
-
-        //     if (user) {
-        //         memberIds.push(user._id);
-        //     } else {
-        //         console.log(`User not found for email: ${email}`);
-        //     }
-        // }
-
-        // Proceed if there are valid users to register
-        // if (memberIds.length > 0) {
-        //     // Update event with team members
-        //     await Event.findByIdAndUpdate(
-        //         eventId,
-        //         { $push: { members: { $each: memberIds } } },
-        //         { new: true }
-        //     );
-        // }
 
         // Create registration entry
         const registration = await Registration.create({
             teamname: teamname,
             user: teamEmail,
-            event: eventId
+            event: eventId,
         });
 
-        console.log("registration", registration)
+        if (!registration) {
+            return res.status(400).json({ message: "Failed to create registration. Please try again." });
+        }
 
-
-
-
-
-        
-
+        // Update the corresponding users' events
         for (let email of teamEmail) {
-            console.log(email)
             const user = await User.findOne({ email });
             if (user) {
                 user.eventsregistered.push(eventId);
                 await user.save();
-            } 
-            // else {
-            //     console.log(`User not found for email: ${email}`);
-            // }
+            } else {
+                console.log(`User not found for email: ${email}`);
+            }
         }
 
-        console.log("done")
+        // Optionally, you could also update the Event document here with the team members
 
-        if (registration) {
-            return res.status(200).json({
-                message: "Team registration successful",
-            });
-        } else {
-            return res.status(400).json({
-                message: "Failed to register the team. Please try again.",
-            });
-        }
+      
+
+        return res.status(200).json({
+            message: "Team registration successful",
+        });
 
     } catch (error) {
         console.error("Error during event registration:", error);
@@ -105,11 +73,12 @@ const eventRegistration = asyncHandler(async (req, res) => {
     }
 });
 
+
 // Register for Event Handler (User Authentication)
 const registerForEvent = asyncHandler(async (req, res) => {
     try {
 
-        console.log("req.user", req.user);
+        
 
 
         if (!req.user) {
@@ -125,15 +94,14 @@ const registerForEvent = asyncHandler(async (req, res) => {
                 message: "Event ID is required."
             });
         }
-        console.log("User Email:", req.user.email);
-        console.log("Event ID:", eventId);
+        
 
         const isRegistered = await Registration.findOne({
             user: req.user.email,
             event: eventId
         });
 
-        console.log("isRegistered:", isRegistered);
+        
 
         if (isRegistered) {
             return res.status(400).json({

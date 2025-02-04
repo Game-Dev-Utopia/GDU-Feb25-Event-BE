@@ -53,30 +53,8 @@ const sendOtp = async (req, res) => {
             message: error.message || "Error in sending Mail",
         });
     }
-<<<<<<< HEAD
-   
-   console.log(email)
-   
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    
-    otpStore.set(email, otp);
 
-   
-    await sendVerificationEmail(email, otp);
-
-    res.status(200).json({ message: "OTP sent successfully", email });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-       
-      message: error.message || "Error in sending Mail",
-    });
-  }
-=======
->>>>>>> 53c412126176beabf84b85a7b846664959df2e5e
-};
-
+}
 
 const verifyOtp = async (req, res) => {
     try {
