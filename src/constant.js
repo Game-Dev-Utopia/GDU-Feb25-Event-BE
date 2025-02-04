@@ -1,1 +1,1 @@
-export const DB_NAME = "GDU-Backend";
+export const DB_NAME = "Glitched";

@@ -36,7 +36,7 @@ const sendOtp = async (req, res) => {
       return res.status(400).json({ message: "Please enter an email address" });
     }
    
- 
+   console.log(email)
    
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     
@@ -48,8 +48,9 @@ const sendOtp = async (req, res) => {
 
     res.status(200).json({ message: "OTP sent successfully", email });
   } catch (error) {
-    
+    console.log(error)
     return res.status(500).json({
+       
       message: error.message || "Error in sending Mail",
     });
   }
@@ -119,6 +120,7 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(500);
         throw new Error("Something went wrong while registering the user");
     }
+    
 
 
     res.status(201).json({

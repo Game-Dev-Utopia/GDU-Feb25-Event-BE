@@ -64,7 +64,10 @@ const eventRegistration = asyncHandler(async (req, res) => {
             throw new Error("Email doesn't exist");
         }
 
+        
+
         for (let email of teamEmail) {
+            console.log(email)
             const user = await User.findOne({ email });
             if (user) {
                 user.eventsregistered.push(eventId);
