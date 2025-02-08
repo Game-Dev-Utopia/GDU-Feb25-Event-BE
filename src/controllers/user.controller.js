@@ -186,6 +186,7 @@ const loginUser = asyncHandler(async (req, res) => {
             username: userExist.username,
             email: userExist.email,
             fullname: userExist.fullname,
+            isAdmin : userExist.isAdmin
         }
     });
 });
