@@ -90,10 +90,10 @@ const verifyOtp = async (req, res) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { username, email, contact, fullname, password, collegeName, year, dept, rollNo } = req.body;
+    const { username, email, contact, fullname, password, collegeName, year} = req.body;
 
-    console.log(username, email, contact, fullname, password, collegeName, year, dept, rollNo)
-    if ([fullname, email, username, password, contact, collegeName, year, dept, rollNo].some((field) => !field?.trim())) {
+    console.log(username, email, contact, fullname, password, collegeName, year)
+    if ([fullname, email, username, password, contact, collegeName, year].some((field) => !field?.trim())) {
         res.status(400);
         throw new Error("All fields are required");
     }
@@ -118,8 +118,6 @@ const registerUser = asyncHandler(async (req, res) => {
         contact,
         collegeName,
         year,
-        dept,
-        rollNo,
 
     });
 
@@ -289,8 +287,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
                 contact: 1,
                 collegeName: 1,
                 year: 1,
-                dept: 1,
-                rollNo: 1,
             },
         },
     ]);

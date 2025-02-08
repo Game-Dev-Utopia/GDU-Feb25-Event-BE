@@ -46,14 +46,6 @@ const userSchema = new Schema({
         type : Number,
         required : true
     },
-    dept : {
-         type : String,
-         required : true
-    },
-    rollNo : {
-        type : Number,
-        required : true
-    },
     eventsregistered : [
         {
             type : Schema.Types.ObjectId,
