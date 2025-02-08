@@ -31,11 +31,19 @@ const otpStore = new Map();
 
 const sendOtp = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
+        const { email, username } = req.body;
+        if (!email && username) {
             return res.status(400).json({ message: "Please enter an email address" });
         }
-
+        
+        const existedUser = await User.findOne({
+            $or: [{ username }, { email }]
+        });
+    
+        if (existedUser) {
+            res.status(409);
+            throw new Error("User with email or username already exists");
+        }    
 
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -72,7 +80,7 @@ const verifyOtp = async (req, res) => {
             return res.status(400).json({ message: "Invalid OTP" });
         }
     } catch (error) {
-        console.error("Error sending OTP:", error); // Log error for debugging
+        console.error("Error sending OTP:", error); 
         return res.status(500).json({
             message: error.message || "Error in sending Mail",
         });
