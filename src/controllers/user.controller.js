@@ -420,49 +420,33 @@ const notification = asyncHandler(async (req, res) => {
 
 
 const Admin = asyncHandler(async (req, res) => {
-    // const { entry } = req.body;
-
-    // if (!entry) {
-    //     res.status(400);
-    //     throw new Error("username or email require");
-    // }
-
-    // const profile = await User.aggregate([
-    //     {
-    //         $match: {
-    //             $or: [
-    //                 { username: entry },
-    //                 { email: entry }
-    //             ]
-    //         },
-    //     },
-    // ]);
-
-    // if (!profile?.length) {
-    //     res.status(404);
-    //     throw new Error("User profile does not exist");
-    // }
-
-    // const isadmin = profile[0].isAdmin;
-
-    // if (!isadmin) {
-    //     res.status(404);
-    //     throw new Error("User profile as Admin does not exist");
-    // }
 
     const result = await Registration.find();
    
     const registrationdetail = [];
     for (let r of result) {
         const event = await Event.findById(r.event);
+        for(let u of r.user){
 
+            const user = await User.findOne({
+                $or: [
+                    { username: u },
+                    { email: u }
+                ]
+            }).select(
+                "-password -refreshToken"
+            );
+        
         if (event != null) {
             registrationdetail.push({
                 "eventname": event.name,
-                "user": r.user
-
+                "teamName" : r.teamname, 
+                "email" : r.user,
+                "user": user
             })
         }
+
+    }
 
     }
 
