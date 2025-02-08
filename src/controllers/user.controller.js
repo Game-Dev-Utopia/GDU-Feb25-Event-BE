@@ -451,7 +451,7 @@ const Admin = asyncHandler(async (req, res) => {
     // }
 
     const result = await Registration.find();
-
+   
     const registrationdetail = [];
     for (let r of result) {
         const event = await Event.findById(r.event);

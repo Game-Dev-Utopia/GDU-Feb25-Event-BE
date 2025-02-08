@@ -35,9 +35,7 @@ router.route("/notification").get(
 )
 
 
-router.route("/admin", verifyJWT).get(
-    Admin
-)
+
 
 router.route("/send-otp", ).post(
     sendOtp

@@ -89,4 +89,9 @@ import contactRouter from "./routes/contact.routes.js"
 app.use("/api/v1/contact", contactRouter)
 
 
+import adminRouter from "./routes/admin.routes.js"
+
+app.use("/api/v1/admin", verifyJWT, adminRouter)
+
+
 export {app};
