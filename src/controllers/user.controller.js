@@ -420,35 +420,35 @@ const notification = asyncHandler(async (req, res) => {
 
 
 const Admin = asyncHandler(async (req, res) => {
-    const { entry, password } = req.body;
+    // const { entry } = req.body;
 
-    if (!entry) {
-        res.status(400);
-        throw new Error("username or email require");
-    }
+    // if (!entry) {
+    //     res.status(400);
+    //     throw new Error("username or email require");
+    // }
 
-    const profile = await User.aggregate([
-        {
-            $match: {
-                $or: [
-                    { username: entry },
-                    { email: entry }
-                ]
-            },
-        },
-    ]);
+    // const profile = await User.aggregate([
+    //     {
+    //         $match: {
+    //             $or: [
+    //                 { username: entry },
+    //                 { email: entry }
+    //             ]
+    //         },
+    //     },
+    // ]);
 
-    if (!profile?.length) {
-        res.status(404);
-        throw new Error("User profile does not exist");
-    }
+    // if (!profile?.length) {
+    //     res.status(404);
+    //     throw new Error("User profile does not exist");
+    // }
 
-    const isadmin = profile[0].isAdmin;
+    // const isadmin = profile[0].isAdmin;
 
-    if (!isadmin) {
-        res.status(404);
-        throw new Error("User profile as Admin does not exist");
-    }
+    // if (!isadmin) {
+    //     res.status(404);
+    //     throw new Error("User profile as Admin does not exist");
+    // }
 
     const result = await Registration.find();
 
