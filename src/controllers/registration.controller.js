@@ -3,18 +3,18 @@ import { Registration } from "../model/registration.model.js";
 import { User } from "../model/users.model.js";
 import { Event } from "../model/events.model.js";
 
-// Event Registration Handler
+
 const eventRegistration = asyncHandler(async (req, res) => {
     try {
         const eventId = req.query.eventId;
         const teamname = req.body.teamName;
 
-        // Ensure eventId is provided
+    
         if (!eventId) {
             return res.status(400).json({ message: "eventId is required" });
         }
 
-        // Parse team email to array if it's not already an array
+        
         let teamEmail = req.body.teamemail;
         if (!Array.isArray(teamEmail)) {
             try {
@@ -24,7 +24,7 @@ const eventRegistration = asyncHandler(async (req, res) => {
             }
         }
 
-        // Ensure the cookie email exists and matches the first team member email
+       
         const cookiemail = req.cookies?.email;
         if (!cookiemail || teamEmail[0] !== cookiemail) {
             return res.status(400).json({
@@ -32,12 +32,11 @@ const eventRegistration = asyncHandler(async (req, res) => {
             });
         }
 
-        // Ensure at least one team email is provided
         if (teamEmail.length === 0) {
             return res.status(400).json({ message: "No team emails provided" });
         }
 
-        // Create registration entry
+    
         const registration = await Registration.create({
             teamname: teamname,
             user: teamEmail,
@@ -48,7 +47,7 @@ const eventRegistration = asyncHandler(async (req, res) => {
             return res.status(400).json({ message: "Failed to create registration. Please try again." });
         }
 
-        // Update the corresponding users' events
+       
         for (let email of teamEmail) {
             const user = await User.findOne({ email });
             if (user) {
@@ -58,8 +57,6 @@ const eventRegistration = asyncHandler(async (req, res) => {
                 console.log(`User not found for email: ${email}`);
             }
         }
-
-        // Optionally, you could also update the Event document here with the team members
 
       
 
@@ -74,7 +71,7 @@ const eventRegistration = asyncHandler(async (req, res) => {
 });
 
 
-// Register for Event Handler (User Authentication)
+
 const registerForEvent = asyncHandler(async (req, res) => {
     try {
 

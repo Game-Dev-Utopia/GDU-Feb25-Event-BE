@@ -15,7 +15,7 @@ router.route("/getallevents").get(
 )
 
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Log the error
+    console.error(err.stack); 
     const statusCode = err.status || 500;
     res.status(statusCode).json({
         status: 'error',

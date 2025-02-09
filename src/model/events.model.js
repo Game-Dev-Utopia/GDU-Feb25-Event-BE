@@ -15,12 +15,12 @@ const eventSchema = new Schema({
                 type: Date,
             }
         ]
-    ], // Array of arrays of dates
+    ], 
     time: [
         {
             type: String,
         }
-    ], // Array of strings for time
+    ],
     typeOfevent: {
         type: String,
         required: true

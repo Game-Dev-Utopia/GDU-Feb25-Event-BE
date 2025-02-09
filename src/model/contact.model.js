@@ -10,7 +10,7 @@ const contactSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      lowercase: true, // Converts email to lowercase
+      lowercase: true,
     },
     phone: {
       type: String,
@@ -22,10 +22,10 @@ const contactSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 10000, // Limits message length
+      maxlength: 10000,
     },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
+  { timestamps: true } 
 );
 
 export const Contact = mongoose.model("Contact", contactSchema);

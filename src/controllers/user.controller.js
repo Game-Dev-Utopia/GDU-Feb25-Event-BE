@@ -246,8 +246,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
     const optionals = {
-        httpOnly: true, // ✅ Prevents JavaScript access (more secure)
-        secure: true, // ✅ Required for HTTPS (ensure your domain is using HTTPS)
+        httpOnly: true, 
+        secure: true, 
         sameSite: "None",
     }
 
@@ -264,7 +264,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 
 const getUserProfile = asyncHandler(async (req, res) => {
-    // Extract the username from the request params
+    
     const { username } = req.query;
 
     if (!username?.trim()) {
@@ -291,16 +291,16 @@ const getUserProfile = asyncHandler(async (req, res) => {
         },
     ]);
 
-    // Check if profile exists
+   
     if (!profile?.length) {
         res.status(400);
         throw new Error("Profile does not exist");
     }
 
-    // Send the response with the profile data
+   
     return res.status(200).json({
         message: "User fetched successfully!",
-        profile,  // Sending the profile data
+        profile, 
     });
 });
 
@@ -344,7 +344,7 @@ const notification = asyncHandler(async (req, res) => {
         throw new Error("No valid username provided");
     }
 
-    // Fetch user events
+   
     const profile = await User.aggregate([
         { $match: { username: username } },
         { $project: { eventsregistered: 1, _id: 0 } },
@@ -370,13 +370,13 @@ const notification = asyncHandler(async (req, res) => {
             continue;
         }
 
-        let remainingTime = "Updated soon"; // Default value if no valid date
+        let remainingTime = "Updated soon"; 
 
         if (event.date && Array.isArray(event.date) && event.date.length > 0) {
             const eventDate = new Date(event.date[0]);
 
             if (!isNaN(eventDate.getTime())) {
-                // ✅ Calculate remaining time
+             
                 const currentDate = new Date();
 
                 if (eventDate > currentDate) {
@@ -392,19 +392,18 @@ const notification = asyncHandler(async (req, res) => {
             }
         }
 
-        // ✅ Add event details to response array
+     
         eventdetail.push({
             eventid: eventId,
             eventname: event.name,
             eventdesc: event.description,
-            eventDate: event.date?.[0] || "TBD", // Show "TBD" if no date is available
+            eventDate: event.date?.[0] || "TBD",
             remainingTime,
         });
     }
 
     console.log("📢 Event Notifications:", eventdetail);
 
-    // ✅ Send response
     return res.status(200).json({
         message: "Notifications processed successfully.",
         eventdetail
