@@ -1,7 +1,7 @@
 import {Router} from "express"
 import express from "express"
 import { verifyJWT } from "../middleware/auth.middleware.js"
-import { submitContact } from "../controllers/contact.controller.js"
+import { submitContact, dummy } from "../controllers/contact.controller.js"
 
 const app = express()
 const router = Router()
@@ -10,6 +10,10 @@ app.use(express.json())
 
 router.route("/").post(
     submitContact
+)
+
+router.route("/dummy").get(
+    dummy
 )
 
 

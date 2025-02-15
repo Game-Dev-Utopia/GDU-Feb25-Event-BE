@@ -32,4 +32,9 @@ const submitContact = asyncHandler(async (req, res) => {
 });
 
 
-export { submitContact }
+const dummy = asyncHandler(async (req, res) => {
+    return res.status(200).send("ok")
+})
+
+
+export { submitContact, dummy }

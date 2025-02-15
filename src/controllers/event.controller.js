@@ -35,4 +35,7 @@ const getallevents = asyncHandler(async (req, res) => {
     res.status(200).json(events);
 });
 
+
+
+
 export { eventDetail, getallevents };
